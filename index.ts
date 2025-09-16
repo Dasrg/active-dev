@@ -22,37 +22,6 @@ export async function checkToken(value: string): Promise<boolean> {
  return res.status !== 200 ? false : true;
 }
 
-const community = await prompts({
- type: "confirm",
- name: "value",
- message: "You created new Discord Server and enabled Community in Server Settings?",
- initial: true,
-});
-
-if (!community.value) {
- console.log(chalk.bold.red("✖ You need to create new Discord Server and enable Community in Server Settings!"));
- /* eslint-disable-next-line node/no-process-exit */
- process.exit(0);
-}
-
-const tokenPrompt = await prompts({
- type: "password",
- name: "token",
- message: "Enter your Discord Bot token (you can paste it by pressing Ctrl + Shift + V):",
-
- validate: async (value: string) => {
-  const valid = await checkToken(value);
-  return valid ? true : "Invalid Discord Bot token!";
- },
-});
-
-const valid = await checkToken(tokenPrompt.token);
-
-if (!valid) {
- console.log(chalk.bold.red("✖ Invalid Discord Bot token!"));
- /* eslint-disable-next-line node/no-process-exit */
- process.exit(0);
-}
 
 console.log();
 const spinner = ora(chalk.bold("Running Discord Bot")).start();
@@ -62,7 +31,7 @@ const client = new Client({
 });
 
 try {
- client.login(tokenPrompt.token);
+ client.login(process.env.token);
 } catch (_e) {
  spinner.fail(chalk.bold("Error while logging in to Discord! GG, You broke Discord!"));
  /* eslint-disable-next-line node/no-process-exit */
